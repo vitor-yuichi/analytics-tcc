@@ -1,9 +1,11 @@
 import folium 
 import pandas 
+import datetime
 
-def plot_floods_folium(floods, start_date = '2019-01-01', end_date = '2019-01-10'):
+
+def plot_floods_folium(floods, start_date = datetime.date(2019, 1, 3), end_date = datetime.date(2019, 1, 10)):
     #filtrando por data 
-    floods = floods[(floods.DATA > start_date) & (floods.DATA < end_date)]
+    floods = floods[(floods.DATA.dt.date >= start_date) & (floods.DATA.dt.date <= end_date)]
 
 
     # Create a Folium map centered at a specific location
