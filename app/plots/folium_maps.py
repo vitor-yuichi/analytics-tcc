@@ -3,7 +3,7 @@ import pandas
 import datetime
 
 
-def plot_floods_folium(floods, start_date = datetime.date(2019, 1, 3), end_date = datetime.date(2019, 1, 10)):
+def plot_floods_folium(floods, start_date = datetime.date(2019, 1, 3), end_date = datetime.date(2019, 1, 10), tile = 'CartoDB dark_matter'):
     #filtrando por data 
     floods = floods[(floods.DATA.dt.date >= start_date) & (floods.DATA.dt.date <= end_date)]
 
@@ -11,7 +11,7 @@ def plot_floods_folium(floods, start_date = datetime.date(2019, 1, 3), end_date 
     # Create a Folium map centered at a specific location
     my_map = folium.Map(location=[floods['LATITUDE'].mean(), floods['LONGITUDE'].mean()],
                          zoom_start=11,
-                        tiles='CartoDB dark_matter',
+                        tiles=tile,
                         )
 
     # Iterate through the DataFrame and add markers
