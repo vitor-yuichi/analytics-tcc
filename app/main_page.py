@@ -18,7 +18,7 @@ from widgets.date_widgets import set_date_widget
 ##-----------------------------##
 
 def import_floods():
-    floods = pd.read_excel(r'/home/ayumi/final_project_university/analytics-project/analytics-tcc/app/database/floods.xlsx')
+    floods = pd.read_excel(r'/analytics-project/analytics-tcc/app/database/floods.xlsx')
     return floods
 
 floods = import_floods()
@@ -138,7 +138,7 @@ with col2:
 
 
 st.title('Consulta de dados de alagamentos')
-st.write('Estes dados estão conectados diretamente à API da base de dados MongoDB. Caso necessite comparar com outra base de dados, abaixo você poded importar uma segunda tabela e executar operações entre tabelas.')
+st.write('Estes dados estão conectados diretamente à API da base de dados MongoDB. Caso necessite comparar com outra base de dados, abaixo você pode importar uma segunda tabela e executar operações entre tabelas.')
 spreadsheet(floods)
 
 
