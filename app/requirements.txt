@@ -1,0 +1,4 @@
+matplotlib==3.4.3
+streamlit-folium==0.4.0
+folium==0.12.1
+mitosheet==0.1.552
