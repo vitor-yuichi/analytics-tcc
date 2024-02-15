@@ -1,4 +1,5 @@
-matplotlib
-mitosheets
+streamlit
+pandas 
+mitosheet
 streamlit-folium
 pandas
