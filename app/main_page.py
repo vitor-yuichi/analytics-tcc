@@ -2,9 +2,11 @@ import streamlit as st
 import pandas as pd 
 import numpy as np
 from streamlit_folium import st_folium
+import plotly.express as px
 import datetime
 import plotly.graph_objects as go
 import os 
+from datetime import timedelta
 from mitosheet.streamlit.v1 import spreadsheet
 ## BIBLIOTECAS PERSONALIZADAS##
 from plots.folium_maps import plot_floods_folium
@@ -18,7 +20,7 @@ from widgets.date_widgets import set_date_widget
 ##-----------------------------##
 
 def import_floods():
-    floods = pd.read_excel(r'/analytics-project/analytics-tcc/app/database/floods.xlsx')
+    floods = pd.read_excel(os.path.abspath('database/floods.xlsx'))
     return floods
 
 floods = import_floods()
@@ -43,14 +45,11 @@ def indicator(val):
 
 ##------------------------SIDE BAR------------------------#
 # # Using "with" notation
-# with st.sidebar:
-    #"""Logo imagem UNESP"""
-    # st.image(os.path.abspath('assets/imgs/AV01F-9EiLtRWpK-transformed.png'))
-    # st.markdown("<h4 style='text-align: center; color: Green;'>Engenharia Ambiental - SJC</h4>", unsafe_allow_html=True)
-    # add_radio = st.radio(
-    #     "Choose a shipping method",
-    #     ("Standard (5-15 days)", "Express (2-5 days)")
-    # )
+with st.sidebar:
+
+    st.image(os.path.abspath('assets/imgs/AV01F-9EiLtRWpK-transformed.png'))
+    st.markdown("<h4 style='text-align: center; color: Green;'>Engenharia Ambiental - SJC</h4>", unsafe_allow_html=True)
+
 # # Using object notation
 # add_selectbox = st.sidebar.selectbox(
     
@@ -137,8 +136,62 @@ with col2:
 
 
 
-st.title('Consulta de dados de alagamentos')
+st.header('Consulta de dados de alagamentos', divider = 'violet')
 st.write('Estes dados estão conectados diretamente à API da base de dados MongoDB. Caso necessite comparar com outra base de dados, abaixo você pode importar uma segunda tabela e executar operações entre tabelas.')
 spreadsheet(floods)
 
+
+st.header('Correlações estatística', divider  = 'violet')
+
+st.radio('Escolha:', ['Dispersão (Duração x Tempo)', 'Dispersão (Alagamentos x Duração)', 'Boxplot'])
+
+
+
+def group_by_day_floods_min(floods):
+   floods.H_INICIO = pd.to_timedelta(floods.H_INICIO)
+   floods.H_FIM = pd.to_timedelta(floods.H_FIM )
+   floods['DUR'] = floods['H_FIM'] - floods['H_INICIO'] 
+   group = floods[['DATA', 'DUR']].groupby('DATA')['DUR'].sum()
+   group = group.dt.seconds/60
+   return group
+
+group = group_by_day_floods_min(floods)
+
+
+
+def generate_scatter(series):
+    fig = px.scatter(
+        series,
+        x = series.index,
+        y=series.values,
+        color=series.values,
+        color_continuous_scale="reds",
+    )
+    return fig
+
+# Criar um DataFrame com as datas
+def generate_frequency_merge(floods):
+    datas = pd.date_range(start='2019-01-01', end='2019-12-31', freq='D')
+    datas = pd.DataFrame({'Data': datas})
+    merged = datas.merge(group.to_frame().reset_index(),
+            right_on = 'DATA', 
+            left_on = 'Data', 
+            how ='left')
+    merged = merged.merge(floods.DATA.value_counts().to_frame().reset_index(),
+             right_on= 'index',
+             left_on = 'Data', 
+             how = 'left')
+    merged = merged.drop(columns = ['DATA_x', 'index'])
+    merged.rename(columns = {'DATA_y': 'Freq'}, inplace = True)
+    merged.DUR = merged.DUR.fillna(0)
+    merged.Freq = merged.Freq.fillna(0)
+    return merged
+
+freq = generate_frequency_merge(floods).set_index('DUR')['Freq']
+
+
+# Plot!
+
+st.plotly_chart(generate_scatter(group), use_container_width=True)
+st.plotly_chart(generate_scatter(freq), use_container_width=True)
 
