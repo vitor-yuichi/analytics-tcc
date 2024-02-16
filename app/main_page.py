@@ -45,10 +45,10 @@ def indicator(val):
 
 ##------------------------SIDE BAR------------------------#
 # # Using "with" notation
-with st.sidebar:
+# with st.sidebar:
 
-    st.image(os.path.abspath('assets/imgs/AV01F-9EiLtRWpK-transformed.png'))
-    st.markdown("<h4 style='text-align: center; color: Green;'>Engenharia Ambiental - SJC</h4>", unsafe_allow_html=True)
+#     st.image(os.path.abspath('assets/imgs/AV01F-9EiLtRWpK-transformed.png'))
+#     st.markdown("<h4 style='text-align: center; color: Green;'>Engenharia Ambiental - SJC</h4>", unsafe_allow_html=True)
 
 # # Using object notation
 # add_selectbox = st.sidebar.selectbox(
