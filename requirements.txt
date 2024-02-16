@@ -4,3 +4,4 @@ mitosheet
 streamlit-folium
 pandas
 plotly
+openpyxl
