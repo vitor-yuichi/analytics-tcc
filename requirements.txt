@@ -3,3 +3,4 @@ pandas
 mitosheet
 streamlit-folium
 pandas
+plotly
