@@ -20,7 +20,7 @@ from widgets.date_widgets import set_date_widget
 ##-----------------------------##
 @st.cache_data
 def import_floods():
-    floods = pd.read_excel('floods.xlsx')
+    floods = pd.read_excel(os.path.abspath('floods.xlsx'))
     return floods
 
 floods = import_floods().copy()
