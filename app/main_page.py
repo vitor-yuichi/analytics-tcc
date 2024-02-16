@@ -18,12 +18,12 @@ from widgets.date_widgets import set_date_widget
 
 ## ----DADOS TEMPORARIOS---##
 ##-----------------------------##
-
+@st.cache_data
 def import_floods():
     floods = pd.read_excel('floods.xlsx')
     return floods
 
-floods = import_floods()
+floods = import_floods().copy()
 ##-----------------------------##
 
 def indicator(val):
