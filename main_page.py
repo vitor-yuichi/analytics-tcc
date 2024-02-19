@@ -6,6 +6,7 @@ import plotly.express as px
 import datetime
 import plotly.graph_objects as go
 import os 
+import time
 from datetime import timedelta
 from mitosheet.streamlit.v1 import spreadsheet
 ## BIBLIOTECAS PERSONALIZADAS##
@@ -13,7 +14,7 @@ from plots.folium_maps import plot_floods_folium
 from widgets.date_widgets import set_date_widget
 ##--------------------------#
 
-
+progress_text = " :bar_chart: Aguarde o carregamento do plot :bar_chart:"
 
 
 ## ----DADOS TEMPORARIOS---##
@@ -45,12 +46,11 @@ def indicator(val):
 
 ##------------------------SIDE BAR------------------------#
 # # Using "with" notation
-# with st.sidebar:
+with st.sidebar:
 
-#     st.image(os.path.abspath('assets/imgs/AV01F-9EiLtRWpK-transformed.png'))
-#     st.markdown("<h4 style='text-align: center; color: Green;'>Engenharia Ambiental - SJC</h4>", unsafe_allow_html=True)
+    st.image(os.path.abspath('assets/imgs/AV01F-9EiLtRWpK-transformed.png'))
 
-# # Using object notation
+# Using object notation
 # add_selectbox = st.sidebar.selectbox(
     
 st.header("Alagamentos em São Paulo em 2019", divider = 'blue' )
@@ -97,7 +97,7 @@ with col1:
         else:
             st.warning("Por favor, selecione um intervalo de datas antes de calcular.")
     else:
-        st.plotly_chart(indicator(len(filtered_floods)),  use_container_width=True)
+        st.plotly_chart(indicator(len(floods)),  use_container_width=True)
 
 def handle_click_tile(new_type):
     st.session_state['tile_theme'] = new_type
@@ -141,12 +141,12 @@ st.write('Estes dados estão conectados diretamente à API da base de dados Mong
 spreadsheet(floods)
 
 
-st.header('Correlações estatística', divider  = 'violet')
-
-st.radio('Escolha:', ['Dispersão (Duração x Tempo)', 'Dispersão (Alagamentos x Duração)', 'Boxplot'])
+st.header('Distribuição estatística dos dados', divider  = 'violet')
 
 
 
+
+#------ FUNCTIONS FOR PLOT ---------- 
 def group_by_day_floods_min(floods):
    floods.H_INICIO = pd.to_timedelta(floods.H_INICIO)
    floods.H_FIM = pd.to_timedelta(floods.H_FIM )
@@ -163,35 +163,47 @@ def generate_scatter(series):
     fig = px.scatter(
         series,
         x = series.index,
-        y=series.values,
+        y = series.values,
         color=series.values,
         color_continuous_scale="reds",
     )
     return fig
 
-# Criar um DataFrame com as datas
-def generate_frequency_merge(floods):
-    datas = pd.date_range(start='2019-01-01', end='2019-12-31', freq='D')
-    datas = pd.DataFrame({'Data': datas})
-    merged = datas.merge(group.to_frame().reset_index(),
-            right_on = 'DATA', 
-            left_on = 'Data', 
-            how ='left')
-    merged = merged.merge(floods.DATA.value_counts().to_frame().reset_index(),
-             right_on= 'index',
-             left_on = 'Data', 
-             how = 'left')
-    merged = merged.drop(columns = ['DATA_x', 'index'])
-    merged.rename(columns = {'DATA_y': 'Freq'}, inplace = True)
-    merged.DUR = merged.DUR.fillna(0)
-    merged.Freq = merged.Freq.fillna(0)
-    return merged
-
-freq = generate_frequency_merge(floods).set_index('DUR')['Freq']
 
 
+
+if 'option_plot' not in st.session_state:
+    st.session_state['option_plot'] = 'Dispersão (Duração x Tempo)'
+
+def create_option_state(option):
+    st.session_state['option_plot'] = option
+
+
+freq = pd.read_excel('values_freq.xlsx').set_index('DUR')['Freq']
+option = st.radio('Escolha:', ['Dispersão (Duração x Tempo)', 'Dispersão (Alagamentos x Duração)'])
+button1 = st.button('Clique aqui para alterar a visualização!', on_click = create_option_state, args = [option])
 # Plot!
 
-st.plotly_chart(generate_scatter(group), use_container_width=True)
-st.plotly_chart(generate_scatter(freq), use_container_width=True)
+
+
+
+
+if st.session_state['option_plot'] == 'Dispersão (Duração x Tempo)':
+    my_bar = st.progress(0, text=progress_text)
+    for percent_complete in range(100):
+        time.sleep(0.01)
+        my_bar.progress(percent_complete + 1, text=progress_text)
+    my_bar.empty()
+    st.plotly_chart(generate_scatter(group), use_container_width=True)
+    st.write('Este gráfico ilustra a distribuição da duração do alagamento distribuídos ao longo dos dias de 2019')
+elif st.session_state['option_plot'] == 'Dispersão (Alagamentos x Duração)':
+    my_bar = st.progress(0, text=progress_text)
+    for percent_complete in range(100):
+        time.sleep(0.01)
+        my_bar.progress(percent_complete + 1, text=progress_text)
+    my_bar.empty()
+    st.plotly_chart(generate_scatter(freq), use_container_width=True)
+    st.write('Este gráfico demostra a relação entre a frequência de alagamentos e duração total tempo, indicando se existe correlações estatística entre a duas variáveis analisadas')
+else:
+    pass
 
