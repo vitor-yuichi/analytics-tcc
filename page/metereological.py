@@ -1,5 +1,6 @@
 
 def windy_map_with_options():
+    API = st.secrets['API']
     import pandas as pd 
     from PIL import Image
     import streamlit as st
@@ -137,7 +138,7 @@ def windy_map_with_options():
         st.session_state['mun_selecionado'] = 'São José dos Campos'
 
     def pass_option_value(option):
-        values = windy_api(st.secrets['API'], municipios[municipios.nome == option]['latitude'].values[0], municipios[municipios.nome == option]['longitude'].values[0])
+        values = windy_api(API, municipios[municipios.nome == option]['latitude'].values[0], municipios[municipios.nome == option]['longitude'].values[0])
         datas_correspondentes = convert_int_to_timestamp(values, 'ts')
         dataframe = generate_dataframe_from_api(values, datas_correspondentes)
         st.session_state['windy_call_api'] = dataframe
