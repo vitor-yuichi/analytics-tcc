@@ -1,6 +1,6 @@
 
 def windy_map_with_options():
-    API = st.secrets['API']
+    
     import pandas as pd 
     from PIL import Image
     import streamlit as st
@@ -123,6 +123,7 @@ def windy_map_with_options():
         municipios =  municipios[municipios['codigo_uf'] == 35]
         return municipios[['nome', 'latitude', 'longitude']]
     
+    API = st.secrets.windy_api.API
 
     municipios = import_municipios()
  
