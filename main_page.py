@@ -2,6 +2,8 @@ import streamlit as st
 from page.alagamentos_sp import floods_2019_data_sp
 from page.metereological import windy_map_with_options
 import os 
+from PIL import Image
+
 
 st.set_page_config(
         page_title="Analytics Project",
@@ -10,32 +12,60 @@ st.set_page_config(
 
 def intro():
 
-    st.write("# Bem vindo à plataforma de Analytics voltados à dados metereológicos e hidrológicos")
+    st.header("Open Data Analytics", divider = 'blue')
+
     st.sidebar.success("Selecione a página")
 
     st.markdown(
         """
-        Este projeto reune dados do INMET, alagamentos de 2019 registrados pela defesa civil e dados metereológicos de diversas plataformas.
+        **Qual é o objetivo deste projeto?**
 
-        **👈 Selecione os dados que deseja visualizar** to see some examples
-        of what Streamlit can do!
+        - :red[Atualização Dinâmica]: Possibilitar a visualização e análise de dados em tempo real, permitindo aos
+        usuários acompanhar mudanças e tendências assim que ocorrem;
 
-        ### Want to learn more?
+        - :red[Streaming de Dados]: Integrar a capacidade de lidar com fluxos contínuos de dados,
+          proporcionando uma visão sempre atualizada do cenário analisado;
 
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
+        - :red[Facilitar o acesso] a dados estruturados, tratados e visualizações 
+        robustas sem conhecimentos profundos em operações complexas de dados;
 
-        ### See more complex demos
+        - :red[Demonstrar que é possível realizar um projeto complexo de dados] sem qualquer custo que utiliza as tecnologias mais modernas como 
+        databases e deploys em nuvens; 
 
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
+        
+
+        **Fonte de Dados:**
+
+
+        - :violet[INMET (Instituto Nacional de Meteorologia)]: Fornece dados meteorológicos oficiais e confiáveis,
+          incluindo informações como temperatura, umidade, velocidade do vento, entre outros. Este dados encontram-se
+          tratados e armazenados no banco de dados MongoDB;
+
+
+        - :violet[Defesa Civil]: Contribui com registros de alagamentos ocorridos em 2019, fornecendo informações valiosas sobre eventos climáticos extremos e suas consequências.
+
+        - :blue[Windy]: Previsão Meteorológica: Integração com a API da Windy permite acesso a dados de previsão meteorológica em tempo real. 
+        Esses dados podem incluir previsões de temperatura, precipitação, vento, pressão atmosférica, entre outros.  
     """
     )
+    st.subheader('Powered by:')
+    col1, col2, col3 = st.columns(3)
 
 
+    # Page icon
+    icon = Image.open('assets/imgs/mongodb-ar21.png')
+    plotly_icon = Image.open('assets/imgs/Plotly-logo.png')
+    stream_icon = Image.open('assets/imgs/stream.png')
+    windy_icon = Image.open('assets/imgs/windy_full.png')
+    python_icon = Image.open('assets/imgs/python.png')
+    with col1:
+        st.image(icon)
+        st.image(windy_icon)
+    with col2:
+        st.image( plotly_icon )
+        st.image(python_icon)
+    with col3:
+        st.image( stream_icon )
 
 page_names_to_funcs = {
     "Página inicial": intro,
